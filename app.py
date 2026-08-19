@@ -279,9 +279,9 @@ def send_daily_report():
         # Рекомендую использовать Яндекс.Почту или Mail.ru для отправки
         SMTP_SERVER = 'smtp.yandex.ru'   # или smtp.mail.ru
         SMTP_PORT = 465
-        SMTP_USER = 'your-email@yandex.ru'
-        SMTP_PASSWORD = 'your-app-password'  # Специальный пароль для приложений
-        TO_EMAIL = 'owner-email@example.com'
+        SMTP_USER = 'dyadyk.yurij@yandex.ru'
+        SMTP_PASSWORD = 'skskixmzczcmleih'  # Специальный пароль для приложений
+        TO_EMAIL = 'dyadyk.yurij@yandex.ru'
 
         msg = MIMEMultipart()
         msg['From'] = SMTP_USER
