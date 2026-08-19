@@ -36,6 +36,7 @@
     {% endif %}
 
     <form method="POST" id="regForm">
+        <input type="hidden" name="select_date_only" value="1">
         <!-- ЛИЧНЫЕ ДАННЫЕ -->
         <div class="row">
             <div class="col-md-6 mb-3">
@@ -130,10 +131,10 @@
         });
     });
 
-    // При смене даты — обновляем страницу, чтобы показать занятые слоты
+    // При смене даты — отправляем форму (а не перезагружаем страницу)
     document.getElementById('dateSelect').addEventListener('change', function() {
         if (this.value) {
-            window.location.href = `/?date=${this.value}`;  // Простая перезагрузка с параметром
+            document.getElementById('regForm').submit();  // ← отправляем форму, а не перезагружаем
         }
     });
 </script>
