@@ -92,116 +92,49 @@ with app.app_context():
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        # Получаем данные формы
-        last_name = request.form.get('last_name', '').strip()
-        first_name = request.form.get('first_name', '').strip()
-        middle_name = request.form.get('middle_name', '').strip()
-        birth_date = request.form.get('birth_date', '').strip()
-        phone = request.form.get('phone', '').strip()
-        passport_series = request.form.get('passport_series', '').strip()
-        passport_number = request.form.get('passport_number', '').strip()
-        passport_issued_by = request.form.get('passport_issued_by', '').strip()
-        passport_issued_date = request.form.get('passport_issued_date', '').strip()
-        address = request.form.get('address', '').strip()
-        reg_date = request.form.get('reg_date', '').strip()
-        reg_time = request.form.get('reg_time', '').strip()
-
-        # === ВАЛИДАЦИЯ ===
-        errors = []
-        if not last_name: errors.append('Фамилия обязательна')
-        if not first_name: errors.append('Имя обязательно')
-        if not birth_date:
-            errors.append('Дата рождения обязательна')
+        # Получаем все данные из формы (включая дату и время)
+        form_data = {
+            'last_name': request.form.get('last_name', ''),
+            'first_name': request.form.get('first_name', ''),
+            'middle_name': request.form.get('middle_name', ''),
+            'birth_date': request.form.get('birth_date', ''),
+            'phone': request.form.get('phone', ''),
+            'passport_series': request.form.get('passport_series', ''),
+            'passport_number': request.form.get('passport_number', ''),
+            'passport_issued_by': request.form.get('passport_issued_by', ''),
+            'passport_issued_date': request.form.get('passport_issued_date', ''),
+            'address': request.form.get('address', ''),
+            'reg_date': request.form.get('reg_date', ''),
+            'reg_time': request.form.get('reg_time', ''),
+        }
+        
+        # Проверяем, была ли нажата кнопка "Записаться"
+        if 'submit_registration' in request.form:
+            # Здесь будет ваша логика сохранения в базу
+            # ... (перенесите сюда код сохранения из вашего текущего обработчика)
+            pass
         else:
-            try:
-                datetime.strptime(birth_date, '%d.%m.%Y')
-            except ValueError:
-                errors.append('Дата рождения должна быть в формате ДД.ММ.ГГГГ')
-        if not phone or not is_valid_phone(phone):
-            errors.append('Введите корректный номер телефона (10-15 цифр)')
-        if not passport_series: errors.append('Серия паспорта обязательна')
-        if not passport_number: errors.append('Номер паспорта обязателен')
-        if not passport_issued_by: errors.append('Кем выдан паспорт — обязательно')
-        if not passport_issued_date:
-            errors.append('Дата выдачи паспорта обязательна')
-        else:
-            try:
-                datetime.strptime(passport_issued_date, '%d.%m.%Y')
-            except ValueError:
-                errors.append('Дата выдачи должна быть в формате ДД.ММ.ГГГГ')
-        if not address: errors.append('Адрес пребывания обязателен')
-
-        # Проверка даты записи
-        if not reg_date:
-            errors.append('Выберите дату записи')
-        else:
-            try:
-                d = parse_date(reg_date)
-                if d <= date.today():
-                    errors.append('Нельзя записаться на сегодня или прошедшую дату')
-                if d.weekday() in [5, 6]:
-                    errors.append('Запись только в будние дни')
-                if Registration.query.filter_by(reg_date=reg_date).count() >= 36:
-                    errors.append('На эту дату все места заняты')
-            except ValueError:
-                errors.append('Некорректная дата записи')
-
-        # Проверка времени
-        if not reg_time:
-            errors.append('Выберите время')
-        else:
-            if reg_time not in generate_time_slots():
-                errors.append('Некорректное время')
-            else:
-                booked = get_booked_times(reg_date)
-                if reg_time in booked:
-                    errors.append('Это время уже занято, выберите другое')
-
-        if errors:
-            # Возвращаем форму с ошибками
+            # Это выбор даты — показываем форму с уже заполненными данными
             available_dates = get_available_dates()
             all_slots = generate_time_slots()
-            booked_slots = get_booked_times(reg_date) if reg_date else []
+            booked_slots = get_booked_times(form_data['reg_date']) if form_data['reg_date'] else []
+            
             return render_template('form.html',
-                                   errors=errors,
-                                   data=request.form,
+                                   errors=[],
+                                   data=form_data,  # ← вот здесь передаём заполненные данные
                                    available_dates=available_dates,
                                    all_slots=all_slots,
                                    booked_slots=booked_slots,
                                    clinic_address="г. Ульяновск, Московское шоссе, 92",
                                    clinic_phone="8 (8422) 22-97-80",
                                    work_hours="10:00 – 13:00, будни (кроме праздников)")
-
-        # Сохраняем в базу
-        new_reg = Registration(
-            last_name=last_name,
-            first_name=first_name,
-            middle_name=middle_name,
-            birth_date=birth_date,
-            phone=phone,
-            passport_series=passport_series,
-            passport_number=passport_number,
-            passport_issued_by=passport_issued_by,
-            passport_issued_date=passport_issued_date,
-            address=address,
-            reg_date=reg_date,
-            reg_time=reg_time
-        )
-        db.session.add(new_reg)
-        db.session.commit()
-
-        return render_template('success.html',
-                               reg_date=reg_date,
-                               reg_time=reg_time,
-                               clinic_address="г. Ульяновск, Московское шоссе, 92",
-                               clinic_phone="8 (8422) 22-97-80")
-
-    # GET — показываем пустую форму
+    
+    # GET-запрос — показываем пустую форму
     available_dates = get_available_dates()
     all_slots = generate_time_slots()
     return render_template('form.html',
                            errors=[],
-                           data={},
+                           data={},  # ← пустой словарь
                            available_dates=available_dates,
                            all_slots=all_slots,
                            booked_slots=[],
