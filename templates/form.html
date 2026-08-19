@@ -10,8 +10,11 @@
                background-size: cover;
                background-position: center;
                background-attachment: fixed; 
-               padding: 20px; }
-        .container { background: rgba(255, 255, 255, 0.92);
+               padding: 20px;
+               min-height: 100vh; /* ← добавляем, чтобы фон заполнил весь экран */}
+        .container { max-width: 700px; /* ← ВАЖНО! Ограничиваем ширину */
+                     margin: 0 auto;   /* ← Центрируем */
+                     background: rgba(255, 255, 255, 0.92);
                      border-radius: 16px;
                      padding: 30px;
                      box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
