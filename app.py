@@ -92,8 +92,8 @@ with app.app_context():
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        # Получаем все данные из формы (включая дату и время)
-        form_data = {
+        # Получаем все данные из формы
+        data = {
             'last_name': request.form.get('last_name', ''),
             'first_name': request.form.get('first_name', ''),
             'middle_name': request.form.get('middle_name', ''),
@@ -108,42 +108,81 @@ def index():
             'reg_time': request.form.get('reg_time', ''),
         }
         
-        # Проверяем, была ли нажата кнопка "Записаться"
+        # Проверяем, была ли нажата кнопка "Записаться" (финальная отправка)
         if 'submit_registration' in request.form:
-            # Это финальная отправка (кнопка "Записаться")
-            pass
-        elif 'select_date_only' in request.form:
-            # Это выбор даты — показываем форму с данными
-            pass
-        else:
-            # Это выбор даты — показываем форму с уже заполненными данными
-            available_dates = get_available_dates()
-            all_slots = generate_time_slots()
-            booked_slots = get_booked_times(form_data['reg_date']) if form_data['reg_date'] else []
+            # === ВАЛИДАЦИЯ ===
+            errors = []
+            if not data['last_name']: errors.append('Фамилия обязательна')
+            if not data['first_name']: errors.append('Имя обязательно')
+            # ... добавьте остальные проверки из вашего кода ...
             
-            return render_template('form.html',
-                                   errors=[],
-                                   data=form_data,  # ← вот здесь передаём заполненные данные
-                                   available_dates=available_dates,
-                                   all_slots=all_slots,
-                                   booked_slots=booked_slots,
+            if errors:
+                # Если ошибки — показываем форму с данными и ошибками
+                available_dates = get_available_dates()
+                all_slots = generate_time_slots()
+                booked_slots = get_booked_times(data['reg_date']) if data['reg_date'] else []
+                return render_template('form.html',
+                                       errors=errors,
+                                       data=data,
+                                       available_dates=available_dates,
+                                       all_slots=all_slots,
+                                       booked_slots=booked_slots,
+                                       clinic_address="г. Ульяновск, Московское шоссе, 92",
+                                       clinic_phone="8 (8422) 22-97-80",
+                                       work_hours="10:00 – 13:00, будни (кроме праздников)")
+            
+            # Сохраняем в базу
+            new_reg = Registration(
+                last_name=data['last_name'],
+                first_name=data['first_name'],
+                middle_name=data['middle_name'],
+                birth_date=data['birth_date'],
+                phone=data['phone'],
+                passport_series=data['passport_series'],
+                passport_number=data['passport_number'],
+                passport_issued_by=data['passport_issued_by'],
+                passport_issued_date=data['passport_issued_date'],
+                address=data['address'],
+                reg_date=data['reg_date'],
+                reg_time=data['reg_time']
+            )
+            db.session.add(new_reg)
+            db.session.commit()
+            
+            return render_template('success.html',
+                                   reg_date=data['reg_date'],
+                                   reg_time=data['reg_time'],
                                    clinic_address="г. Ульяновск, Московское шоссе, 92",
-                                   clinic_phone="8 (8422) 22-97-80",
-                                   work_hours="10:00 – 13:00, будни (кроме праздников)")
+                                   clinic_phone="8 (8422) 22-97-80")
+        
+        # Если это не финальная отправка, значит, это выбор даты
+        # Показываем форму с уже заполненными данными
+        available_dates = get_available_dates()
+        all_slots = generate_time_slots()
+        booked_slots = get_booked_times(data['reg_date']) if data['reg_date'] else []
+        
+        return render_template('form.html',
+                               errors=[],
+                               data=data,  # ← передаём заполненные данные!
+                               available_dates=available_dates,
+                               all_slots=all_slots,
+                               booked_slots=booked_slots,
+                               clinic_address="г. Ульяновск, Московское шоссе, 92",
+                               clinic_phone="8 (8422) 22-97-80",
+                               work_hours="10:00 – 13:00, будни (кроме праздников)")
     
     # GET-запрос — показываем пустую форму
     available_dates = get_available_dates()
     all_slots = generate_time_slots()
     return render_template('form.html',
                            errors=[],
-                           data={},  # ← пустой словарь
+                           data={},
                            available_dates=available_dates,
                            all_slots=all_slots,
                            booked_slots=[],
                            clinic_address="г. Ульяновск, Московское шоссе, 92",
                            clinic_phone="8 (8422) 22-97-80",
                            work_hours="10:00 – 13:00, будни (кроме праздников)")
-
 # ---------- АДМИНКА (ДЛЯ ВЛАДЕЛЬЦА) ----------
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
