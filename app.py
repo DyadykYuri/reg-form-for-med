@@ -146,8 +146,16 @@ def index():
                 reg_date=data['reg_date'],
                 reg_time=data['reg_time']
             )
-            db.session.add(new_reg)
-            db.session.commit()
+            # Перед сохранением
+            print(f"Попытка сохранить: {data['last_name']} {data['first_name']} на {data['reg_date']} {data['reg_time']}")
+            
+            try:
+                db.session.add(new_reg)
+                db.session.commit()
+                print("✅ Запись сохранена успешно!")
+            except Exception as e:
+                print(f"❌ Ошибка сохранения: {e}")
+                db.session.rollback()
             
             return render_template('success.html',
                                    reg_date=data['reg_date'],
