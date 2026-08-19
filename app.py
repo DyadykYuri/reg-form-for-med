@@ -85,6 +85,9 @@ def is_valid_phone(phone):
     cleaned = re.sub(r'[\s\(\)\-]', '', phone)
     return re.match(r'^\+?\d{10,15}$', cleaned) is not None
 
+# ---------- ГАРАНТИРУЕМ СОЗДАНИЕ ТАБЛИЦ ПРИ СТАРТЕ ----------
+with app.app_context():
+    db.create_all()
 # ---------- ПУБЛИЧНАЯ ФОРМА (ДЛЯ ИНОСТРАНЦЕВ) ----------
 @app.route('/', methods=['GET', 'POST'])
 def index():
