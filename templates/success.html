@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Запись подтверждена</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-5" style="max-width: 600px;">
+    <div class="card border-success">
+        <div class="card-header bg-success text-white text-center">
+            <h4>✅ Вы успешно записаны!</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Дата:</strong> {{ reg_date }}</p>
+            <p><strong>Время:</strong> {{ reg_time }}</p>
+            <hr>
+            <p><strong>Адрес клиники:</strong> {{ clinic_address }}</p>
+            <p><strong>Телефон регистратуры:</strong> {{ clinic_phone }}</p>
+            <p class="text-warning">⏰ Приходите за 10 минут до начала.</p>
+            <a href="/" class="btn btn-outline-primary">🔙 Записать другого</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

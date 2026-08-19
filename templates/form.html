@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Запись на медосмотр для иностранцев</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8f9fa; padding: 20px; }
+        .container { max-width: 700px; background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .clinic-info { background: #e7f1ff; border-left: 5px solid #0d6efd; padding: 15px; border-radius: 8px; margin-bottom: 25px; }
+        .slot-btn { margin: 3px; padding: 6px 12px; font-size: 0.85rem; }
+        .slot-booked { background: #e9ecef; color: #6c757d; cursor: not-allowed; }
+        .error { color: #dc3545; font-size: 0.9rem; }
+        @media (max-width: 576px) { .container { padding: 16px; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h3 class="text-center mb-3">📋 Запись иностранного гражданина на медосмотр</h3>
+
+    <div class="clinic-info">
+        <strong>🏥 Адрес:</strong> {{ clinic_address }}<br>
+        <strong>📞 Регистратура:</strong> {{ clinic_phone }}<br>
+        <strong>🕐 Время приёма:</strong> {{ work_hours }}
+    </div>
+
+    {% if errors %}
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                {% for err in errors %}
+                    <li>{{ err }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form method="POST" id="regForm">
+        <!-- ЛИЧНЫЕ ДАННЫЕ -->
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Фамилия *</label>
+                <input type="text" name="last_name" class="form-control" required value="{{ data.get('last_name', '') }}">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Имя *</label>
+                <input type="text" name="first_name" class="form-control" required value="{{ data.get('first_name', '') }}">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Отчество</label>
+            <input type="text" name="middle_name" class="form-control" value="{{ data.get('middle_name', '') }}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Дата рождения * (ДД.ММ.ГГГГ)</label>
+            <input type="text" name="birth_date" class="form-control" placeholder="01.01.1990" required value="{{ data.get('birth_date', '') }}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Номер телефона * (с кодом страны)</label>
+            <input type="tel" name="phone" class="form-control" placeholder="+7 999 123-45-67" required value="{{ data.get('phone', '') }}">
+        </div>
+
+        <!-- ПАСПОРТНЫЕ ДАННЫЕ -->
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Серия паспорта *</label>
+                <input type="text" name="passport_series" class="form-control" required value="{{ data.get('passport_series', '') }}">
+            </div>
+            <div class="col-md-8 mb-3">
+                <label class="form-label">Номер паспорта *</label>
+                <input type="text" name="passport_number" class="form-control" required value="{{ data.get('passport_number', '') }}">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Кем выдан паспорт *</label>
+            <input type="text" name="passport_issued_by" class="form-control" required value="{{ data.get('passport_issued_by', '') }}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Дата выдачи паспорта * (ДД.ММ.ГГГГ)</label>
+            <input type="text" name="passport_issued_date" class="form-control" placeholder="01.01.2020" required value="{{ data.get('passport_issued_date', '') }}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Адрес пребывания в РФ *</label>
+            <input type="text" name="address" class="form-control" placeholder="г. Ульяновск, ул. Ленина, д. 1, кв. 5" required value="{{ data.get('address', '') }}">
+        </div>
+
+        <!-- ВЫБОР ДАТЫ И ВРЕМЕНИ -->
+        <div class="mb-3">
+            <label class="form-label">Дата записи *</label>
+            <select name="reg_date" class="form-select" id="dateSelect" required>
+                <option value="">-- Выберите дату --</option>
+                {% for d in available_dates %}
+                    <option value="{{ d }}" {% if data.get('reg_date') == d %}selected{% endif %}>{{ d }}</option>
+                {% endfor %}
+            </select>
+            {% if available_dates|length == 0 %}
+                <div class="text-warning mt-1">⚠️ На ближайшие 30 дней свободных мест нет. Попробуйте позже.</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Выберите время (слот 5 минут) *</label>
+            <div id="timeSlots">
+                {% for slot in all_slots %}
+                    <button type="button" class="btn btn-outline-secondary btn-sm slot-btn 
+                        {% if slot in booked_slots %}slot-booked{% endif %}"
+                        data-time="{{ slot }}"
+                        {% if slot in booked_slots or not available_dates %}disabled{% endif %}>
+                        {{ slot }}
+                    </button>
+                {% endfor %}
+            </div>
+            <input type="hidden" name="reg_time" id="selectedTime" value="{{ data.get('reg_time', '') }}">
+            <div id="timeError" class="error"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 py-2">✅ Записаться</button>
+        <p class="text-muted text-center mt-3 small">* — поля обязательны для заполнения</p>
+    </form>
+</div>
+
+<script>
+    // Выбор времени (клик по кнопке)
+    document.querySelectorAll('.slot-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (this.disabled) return;
+            document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('btn-primary', 'slot-selected'));
+            this.classList.add('btn-primary', 'slot-selected');
+            document.getElementById('selectedTime').value = this.dataset.time;
+        });
+    });
+
+    // При смене даты — обновляем страницу, чтобы показать занятые слоты
+    document.getElementById('dateSelect').addEventListener('change', function() {
+        if (this.value) {
+            window.location.href = `/?date=${this.value}`;  // Простая перезагрузка с параметром
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
