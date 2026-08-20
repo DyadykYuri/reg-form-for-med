@@ -255,6 +255,20 @@ def admin():
         Registration.reg_time.desc()
     ).all()
     return render_template('admin.html', registrations=registrations)
+# ---------- МАРШРУТ ДЛЯ УДАЛЕНИЯ ЗАПИСЕЙ в АДМИНКЕ (ДЛЯ ВЛАДЕЛЬЦА) ----------
+@app.route('/delete/<int:record_id>', methods=['POST'])
+def delete_record(record_id):
+    # Проверяем пароль (защита)
+    if request.args.get('key') != 'ADMIN2026':
+        return "Доступ запрещён", 403
+    
+    record = Registration.query.get(record_id)
+    if record:
+        db.session.delete(record)
+        db.session.commit()
+        return redirect(url_for('admin', key='ADMIN2026'))
+    else:
+        return "Запись не найдена", 404
 
 # ---------- АВТОМАТИЧЕСКАЯ ОТПРАВКА В 17:00 ----------
 def send_daily_report():
