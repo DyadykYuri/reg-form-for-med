@@ -26,8 +26,15 @@
         <table class="table table-bordered table-hover table-sm">
             <thead class="table-dark">
                 <tr>
-                    <th>ID</th><th>Фамилия</th><th>Имя</th><th>Дата</th><th>Время</th>
-                    <th>Телефон</th><th>Паспорт</th><th>Адрес</th>
+                    <th>ID</th>
+                    <th>Фамилия</th>
+                    <th>Имя</th>
+                    <th>Дата</th>
+                    <th>Время</th>
+                    <th>Телефон</th>
+                    <th>Паспорт</th>
+                    <th>Адрес</th>
+                    <th>Действие</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,6 +48,12 @@
                     <td>{{ r.phone }}</td>
                     <td>{{ r.passport_series }} {{ r.passport_number }}</td>
                     <td>{{ r.address[:30] }}...</td>
+                    <td>
+                        <form method="POST" action="/delete/{{ r.id }}?key=ADMIN2026" 
+                              onsubmit="return confirm('Удалить запись #{{ r.id }}?')">
+                            <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
