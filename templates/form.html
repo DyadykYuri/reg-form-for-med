@@ -163,35 +163,80 @@
 </div>
 
 <script>
+    // Находим форму и кнопку
+    const form = document.getElementById('regForm');
     const submitBtn = document.getElementById('submitBtn');
-
-    document.querySelectorAll('.slot-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            if (this.disabled) return;
-            
-            // Снимаем выделение со всех кнопок слотов
-            document.querySelectorAll('.slot-btn').forEach(b => {
-                b.classList.remove('btn-primary', 'slot-selected');
-            });
-            
-            // Выделяем выбранный слот
-            this.classList.add('btn-primary', 'slot-selected');
-            document.getElementById('selectedTime').value = this.dataset.time;
-            
-            // Активируем кнопку отправки
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('btn-secondary');
-            submitBtn.classList.add('btn-success');
-            submitBtn.textContent = '✅ Записаться'; // можно поменять текст
+    
+    // Функция проверки, заполнены ли все обязательные поля
+    function checkFormValidity() {
+        // Получаем все обязательные поля (с атрибутом required)
+        const requiredFields = form.querySelectorAll('[required]');
+        let allFilled = true;
+        
+        requiredFields.forEach(field => {
+            // Проверяем, что поле не пустое (для select проверяем, что выбрано не первое пустое значение)
+            if (field.tagName === 'SELECT') {
+                if (!field.value || field.value === '') {
+                    allFilled = false;
+                }
+            } else {
+                if (!field.value || field.value.trim() === '') {
+                    allFilled = false;
+                }
+            }
         });
+        
+        // Проверяем, выбран ли слот
+        const selectedTime = document.getElementById('selectedTime').value;
+        const isTimeSelected = selectedTime && selectedTime !== '';
+        
+        // Кнопка активна только если все поля заполнены И выбран слот
+        submitBtn.disabled = !(allFilled && isTimeSelected);
+        
+        // Меняем внешний вид кнопки в зависимости от состояния
+        if (submitBtn.disabled) {
+            submitBtn.classList.remove('btn-success');
+            submitBtn.classList.add('btn-primary');
+            submitBtn.style.opacity = '0.6';
+        } else {
+            submitBtn.classList.remove('btn-primary');
+            submitBtn.classList.add('btn-success');
+            submitBtn.style.opacity = '1';
+        }
+    }
+    
+    // Слушаем изменения во всех полях формы
+    form.querySelectorAll('input, select').forEach(field => {
+        field.addEventListener('input', checkFormValidity);
+        field.addEventListener('change', checkFormValidity);
     });
-
-    // При смене даты форма отправляется (у вас уже есть этот код)
+    
+    // При выборе даты проверяем валидность (у вас уже есть этот код)
     document.getElementById('dateSelect').addEventListener('change', function() {
         if (this.value) {
             document.getElementById('regForm').submit();
         }
     });
+    
+    // При выборе слота проверяем валидность (у вас уже есть этот код)
+    document.querySelectorAll('.slot-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (this.disabled) return;
+            
+            document.querySelectorAll('.slot-btn').forEach(b => {
+                b.classList.remove('btn-primary', 'slot-selected');
+            });
+            
+            this.classList.add('btn-primary', 'slot-selected');
+            document.getElementById('selectedTime').value = this.dataset.time;
+            
+            // Проверяем валидность формы после выбора слота
+            checkFormValidity();
+        });
+    });
+    
+    // При загрузке страницы проверяем валидность (кнопка будет неактивна)
+    window.addEventListener('load', checkFormValidity);
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
