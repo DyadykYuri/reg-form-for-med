@@ -333,14 +333,36 @@ def send_daily_report():
         # Удаляем временный файл
         os.remove(filepath)
 
-# ---------- ЗАПУСК ПЛАНИРОВЩИКА ----------
+# ---------- ЗАПУСК ПЛАНИРОВЩИКА (улучшенная версия) ----------
+# Импортируем модуль os для проверки окружения
+import os
+
+# Создаём планировщик
 scheduler = BackgroundScheduler()
 scheduler.add_job(
     func=send_daily_report,
     trigger=CronTrigger(hour=17, minute=0, timezone=pytz.timezone('Europe/Moscow')),
-    id='daily_report'
+    id='daily_report',
+    misfire_grace_time=3600  # Даём задаче 1 час на выполнение, если она пропущена
 )
-scheduler.start()
+
+# Запускаем планировщик ТОЛЬКО если:
+# 1. Приложение НЕ в режиме отладки (debug=False)
+# 2. Это НЕ дочерний процесс Werkzeug (чтобы не запускать дважды при разработке)
+# 3. Планировщик ещё не запущен
+if not app.debug and not os.environ.get('WERKZEUG_RUN_MAIN') and not scheduler.running:
+    scheduler.start()
+    print("✅ APScheduler успешно запущен!")
+
+# ---------- МАРШРУТ ДЛЯ ПРИНУДИТЕЛЬНОЙ ОТПРАВКИ (ЗАПАСНОЙ) ----------
+@app.route('/trigger-report')
+def trigger_report():
+    """Принудительный запуск отправки отчёта (для тестирования или по cron-запросу)"""
+    try:
+        send_daily_report()
+        return "✅ Отчёт отправлен принудительно", 200
+    except Exception as e:
+        return f"❌ Ошибка: {e}", 500
 
 # ---------- ТОЧКА ВХОДА ----------
 if __name__ == '__main__':
