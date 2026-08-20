@@ -30,6 +30,18 @@
         .slot-booked { background: #e9ecef; color: #6c757d; cursor: not-allowed; }
         .error { color: #dc3545; font-size: 0.9rem; }
         @media (max-width: 576px) { .container { padding: 16px; } }
+
+        /* Кнопка "Записаться" по умолчанию (неактивна) */
+        #submitBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        /* Кнопка "Записаться" когда активна */
+        #submitBtn:enabled {
+            opacity: 1;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -141,20 +153,33 @@
 </div>
 
 <script>
-    // Выбор времени (клик по кнопке)
+    const submitBtn = document.getElementById('submitBtn');
+
     document.querySelectorAll('.slot-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             if (this.disabled) return;
-            document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('btn-primary', 'slot-selected'));
+            
+            // Снимаем выделение со всех кнопок слотов
+            document.querySelectorAll('.slot-btn').forEach(b => {
+                b.classList.remove('btn-primary', 'slot-selected');
+            });
+            
+            // Выделяем выбранный слот
             this.classList.add('btn-primary', 'slot-selected');
             document.getElementById('selectedTime').value = this.dataset.time;
+            
+            // Активируем кнопку отправки
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('btn-secondary');
+            submitBtn.classList.add('btn-success');
+            submitBtn.textContent = '✅ Записаться'; // можно поменять текст
         });
     });
 
-    // При смене даты — отправляем форму (а не перезагружаем страницу)
+    // При смене даты форма отправляется (у вас уже есть этот код)
     document.getElementById('dateSelect').addEventListener('change', function() {
         if (this.value) {
-            document.getElementById('regForm').submit();  // ← отправляем форму, а не перезагружаем
+            document.getElementById('regForm').submit();
         }
     });
 </script>
