@@ -31,16 +31,26 @@
         .error { color: #dc3545; font-size: 0.9rem; }
         @media (max-width: 576px) { .container { padding: 16px; } }
 
-        /* Кнопка "Записаться" по умолчанию (неактивна) */
+        /* Правила для неактивной кнопки */
         #submitBtn:disabled {
             opacity: 0.6;
-            cursor: not-allowed;
+            cursor: not-allowed !important;
+            pointer-events: auto !important;
+            transition: all 0.3s ease;
         }
         
-        /* Кнопка "Записаться" когда активна */
+        /* Правила для активной кнопки */
         #submitBtn:enabled {
             opacity: 1;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+        
+        /* Дополнительное правило при наведении на активную кнопку */
+        #submitBtn:enabled:hover {
+            background-color: #218838;
+            transform: scale(1.02);
         }
     </style>
 </head>
@@ -147,7 +157,7 @@
         <!-- Скрытое поле, чтобы сервер знал, что это выбор даты -->
         <input type="hidden" name="select_date_only" value="1">
     
-        <<button type="submit" name="submit_registration" id="submitBtn" class="btn btn-primary w-100 py-2" disabled>✅ Записаться</button>>
+        <button type="submit" name="submit_registration" id="submitBtn" class="btn btn-primary w-100 py-2" disabled>✅ Записаться</button>
         <p class="text-muted text-center mt-3 small">* — поля обязательны для заполнения</p>
     </form>
 </div>
