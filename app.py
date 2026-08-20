@@ -274,26 +274,34 @@ def delete_record(record_id):
 def send_daily_report():
     with app.app_context():
         today_str = date.today().strftime('%d.%m.%Y')
-        registrations = Registration.query.filter_by(reg_date=today_str).all()
+        
+        # Получаем все записи от сегодняшней даты и дальше
+        registrations = Registration.query.filter(
+            Registration.reg_date >= today_str
+        ).order_by(Registration.reg_date, Registration.reg_time).all()
+        
         if not registrations:
-            print(f"[{datetime.now()}] Нет записей на {today_str}, письмо не отправлено")
+            print(f"[{datetime.now()}] Нет записей от {today_str} и дальше, письмо не отправлено")
             return
 
         # Создаём Excel
         wb = Workbook()
         ws = wb.active
-        ws.title = "Записи на сегодня"
+        ws.title = "Записи на медосмотр"
+        
         headers = ['Фамилия', 'Имя', 'Отчество', 'Дата рождения', 'Телефон',
                    'Серия паспорта', 'Номер паспорта', 'Кем выдан', 'Дата выдачи',
-                   'Адрес', 'Время записи']
+                   'Адрес', 'Дата записи', 'Время записи']
         ws.append(headers)
+        
         for r in registrations:
             ws.append([
                 r.last_name, r.first_name, r.middle_name,
                 r.birth_date, r.phone, r.passport_series, r.passport_number,
                 r.passport_issued_by, r.passport_issued_date,
-                r.address, r.reg_time
+                r.address, r.reg_date, r.reg_time
             ])
+        
         filepath = f"daily_{today_str}.xlsx"
         wb.save(filepath)
 
