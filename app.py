@@ -270,7 +270,7 @@ def delete_record(record_id):
     else:
         return "Запись не найдена", 404
 
-# ---------- АВТОМАТИЧЕСКАЯ ОТПРАВКА В 17:00 ----------
+# ---------- АВТОМАТИЧЕСКАЯ ОТПРАВКА В 11:00 (мск)----------
 def send_daily_report():
     with app.app_context():
         today_str = date.today().strftime('%d.%m.%Y')
@@ -341,7 +341,7 @@ import os
 scheduler = BackgroundScheduler()
 scheduler.add_job(
     func=send_daily_report,
-    trigger=CronTrigger(hour=17, minute=0, timezone=pytz.timezone('Europe/Moscow')),
+    trigger=CronTrigger(hour=11, minute=0, timezone=pytz.timezone('Europe/Moscow')),
     id='daily_report',
     misfire_grace_time=3600  # Даём задаче 1 час на выполнение, если она пропущена
 )
