@@ -56,14 +56,14 @@
 </head>
 <body>
 <div class="container">
-    <h3 class="text-center mb-3 style="font-size: 20px;">Запись иностранного гражданина на медосмотр<br>
+    <h3 class="text-center mb-3 style="font-size: 18px;">Запись иностранного гражданина на медосмотр<br>
       <small class="text-muted">Booking a medical check-up for a foreign national</small>
     </h3>
 
     <div class="clinic-info">
-        <strong>🏥 Адрес/Address:</strong> {{ clinic_address }}<br>
-        <strong>📞 Регистратура/Registration office:</strong> {{ clinic_phone }}<br>
-        <strong>🕐 Время приёма/Appointment time:</strong> {{ work_hours }}
+        <strong>🏥 Адрес / Address:</strong> {{ clinic_address }}<br>
+        <strong>📞 Регистратура / Registration office:</strong> {{ clinic_phone }}<br>
+        <strong>🕐 Время приёма / Appointment time:</strong> {{ work_hours }}
     </div>
 
     {% if errors %}
@@ -81,67 +81,67 @@
         <!-- ЛИЧНЫЕ ДАННЫЕ -->
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label class="form-label">Фамилия *</label>
+                <label class="form-label">Фамилия / Last name *</label>
                 <input type="text" name="last_name" class="form-control" required value="{{ data.get('last_name', '') }}">
             </div>
             <div class="col-md-6 mb-3">
-                <label class="form-label">Имя *</label>
+                <label class="form-label">Имя / First name *</label>
                 <input type="text" name="first_name" class="form-control" required value="{{ data.get('first_name', '') }}">
             </div>
         </div>
         <div class="mb-3">
-            <label class="form-label">Отчество</label>
+            <label class="form-label">Отчество / Middle name</label>
             <input type="text" name="middle_name" class="form-control" value="{{ data.get('middle_name', '') }}">
         </div>
         <div class="mb-3">
-            <label class="form-label">Дата рождения * (ДД.ММ.ГГГГ)</label>
+            <label class="form-label">Дата рождения (ДД.ММ.ГГГГ) / Date of birth (DD.MM.YYYY)* </label>
             <input type="text" name="birth_date" class="form-control" placeholder="01.01.1990" required value="{{ data.get('birth_date', '') }}">
         </div>
         <div class="mb-3">
-            <label class="form-label">Номер телефона * (с кодом страны)</label>
+            <label class="form-label">Номер телефона (с кодом страны) / Phone number (with country code) *</label>
             <input type="tel" name="phone" class="form-control" placeholder="+7 999 123-45-67" required value="{{ data.get('phone', '') }}">
         </div>
 
         <!-- ПАСПОРТНЫЕ ДАННЫЕ -->
         <div class="row">
             <div class="col-md-4 mb-3">
-                <label class="form-label">Серия паспорта *</label>
+                <label class="form-label">Серия паспорта / Passport series *</label>
                 <input type="text" name="passport_series" class="form-control" required value="{{ data.get('passport_series', '') }}">
             </div>
             <div class="col-md-8 mb-3">
-                <label class="form-label">Номер паспорта *</label>
+                <label class="form-label">Номер паспорта / Passport number *</label>
                 <input type="text" name="passport_number" class="form-control" required value="{{ data.get('passport_number', '') }}">
             </div>
         </div>
         <div class="mb-3">
-            <label class="form-label">Кем выдан паспорт *</label>
+            <label class="form-label">Кем выдан паспорт / Who issued the passport *</label>
             <input type="text" name="passport_issued_by" class="form-control" required value="{{ data.get('passport_issued_by', '') }}">
         </div>
         <div class="mb-3">
-            <label class="form-label">Дата выдачи паспорта * (ДД.ММ.ГГГГ)</label>
+            <label class="form-label">Дата выдачи паспорта (ДД.ММ.ГГГГ) / Date of issue of the passport (DD.MM.YYYY) *</label>
             <input type="text" name="passport_issued_date" class="form-control" placeholder="01.01.2020" required value="{{ data.get('passport_issued_date', '') }}">
         </div>
         <div class="mb-3">
-            <label class="form-label">Адрес пребывания в РФ *</label>
+            <label class="form-label">Адрес пребывания в РФ / Address of residence in the Russian Federation *</label>
             <input type="text" name="address" class="form-control" placeholder="г. Ульяновск, ул. Ленина, д. 1, кв. 5" required value="{{ data.get('address', '') }}">
         </div>
 
         <!-- ВЫБОР ДАТЫ И ВРЕМЕНИ -->
         <div class="mb-3">
-            <label class="form-label">Дата записи *</label>
+            <label class="form-label">Дата записи / Date of visit *</label>
             <select name="reg_date" class="form-select" id="dateSelect" required>
-                <option value="">-- Выберите дату --</option>
+                <option value="">-- Выберите дату / Select a date --</option>
                 {% for d in available_dates %}
                     <option value="{{ d }}" {% if data.get('reg_date') == d %}selected{% endif %}>{{ d }}</option>
                 {% endfor %}
             </select>
             {% if available_dates|length == 0 %}
-                <div class="text-warning mt-1">⚠️ На ближайшие 30 дней свободных мест нет. Попробуйте позже.</div>
+                <div class="text-warning mt-1">⚠️ На ближайшие 30 дней свободных мест нет. Попробуйте позже / There are no available spots for the next 30 days. Try again later.</div>
             {% endif %}
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Выберите время (слот 15 минут) *</label>
+            <label class="form-label">Выберите время (слот 15 минут) | Choose a time (15‑minute slot) *</label>
             <div id="timeSlots">
                 {% for slot in all_slots %}
                     <button type="button" class="btn btn-outline-secondary btn-sm slot-btn 
@@ -159,8 +159,8 @@
         <!-- Скрытое поле, чтобы сервер знал, что это выбор даты -->
         <input type="hidden" name="select_date_only" value="1">
     
-        <button type="submit" name="submit_registration" id="submitBtn" class="btn btn-primary w-100 py-2" disabled>✅ Записаться</button>
-        <p class="text-muted text-center mt-3 small">* — поля обязательны для заполнения</p>
+        <button type="submit" name="submit_registration" id="submitBtn" class="btn btn-primary w-100 py-2" disabled>✅ Записаться / Sign up </button>
+        <p class="text-muted text-center mt-3 small">* — поля обязательны для заполнения / the fields are required </p>
     </form>
 </div>
 
