@@ -48,7 +48,7 @@ def parse_date(d_str):
 
 def get_available_dates():
     """Возвращает список дат (строки DD.MM.YYYY) на ближайшие 30 дней,
-       где: будни, не сегодня и не вчера, свободно < 36 мест"""
+       где: будни, не сегодня и не вчера, свободно < 16 мест"""
     today = date.today()
     result = []
     for i in range(30):
@@ -60,7 +60,7 @@ def get_available_dates():
             continue
         d_str = d.strftime('%d.%m.%Y')
         count = Registration.query.filter_by(reg_date=d_str).count()
-        if count < 36:
+        if count < 16:
             result.append(d_str)
     return result
 
@@ -70,14 +70,14 @@ def get_booked_times(date_str):
     return [r.reg_time for r in recs]
 
 def generate_time_slots():
-    """Генерирует слоты с 10:00 до 12:55 с шагом 5 минут"""
+    """Генерирует слоты с 08:00 до 12:00 с шагом 15 минут"""
     slots = []
-    start = datetime.strptime('10:00', '%H:%M')
-    end = datetime.strptime('12:55', '%H:%M')
+    start = datetime.strptime('08:00', '%H:%M')
+    end = datetime.strptime('12:00', '%H:%M')
     current = start
     while current <= end:
         slots.append(current.strftime('%H:%M'))
-        current += timedelta(minutes=5)
+        current += timedelta(minutes=15)
     return slots
 
 def is_valid_phone(phone):
@@ -129,7 +129,7 @@ def index():
                                        booked_slots=booked_slots,
                                        clinic_address="г. Ульяновск, Московское шоссе, 92",
                                        clinic_phone="8 (8422) 22-97-80",
-                                       work_hours="10:00 – 13:00, будни (кроме праздников)")
+                                       work_hours="08:00 – 12:00, будни (кроме праздников)")
             
             # Сохраняем в базу
             new_reg = Registration(
@@ -177,7 +177,7 @@ def index():
                                booked_slots=booked_slots,
                                clinic_address="г. Ульяновск, Московское шоссе, 92",
                                clinic_phone="8 (8422) 22-97-80",
-                               work_hours="10:00 – 13:00, будни (кроме праздников)")
+                               work_hours="08:00 – 12:00, будни (кроме праздников)")
     
     # GET-запрос — показываем пустую форму
     available_dates = get_available_dates()
@@ -190,7 +190,7 @@ def index():
                            booked_slots=[],
                            clinic_address="г. Ульяновск, Московское шоссе, 92",
                            clinic_phone="8 (8422) 22-97-80",
-                           work_hours="10:00 – 13:00, будни (кроме праздников)")
+                           work_hours="08:00 – 12:00, будни (кроме праздников)")
 # ---------- АДМИНКА (ДЛЯ ВЛАДЕЛЬЦА) ----------
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
