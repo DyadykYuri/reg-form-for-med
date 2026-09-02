@@ -139,7 +139,7 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Выберите время (слот 5 минут) *</label>
+            <label class="form-label">Выберите время (слот 15 минут) *</label>
             <div id="timeSlots">
                 {% for slot in all_slots %}
                     <button type="button" class="btn btn-outline-secondary btn-sm slot-btn 
@@ -211,14 +211,14 @@
         field.addEventListener('change', checkFormValidity);
     });
     
-    // При выборе даты проверяем валидность (у вас уже есть этот код)
+    // При выборе даты проверяем валидность
     document.getElementById('dateSelect').addEventListener('change', function() {
         if (this.value) {
             document.getElementById('regForm').submit();
         }
     });
     
-    // При выборе слота проверяем валидность (у вас уже есть этот код)
+    // При выборе слота проверяем валидность
     document.querySelectorAll('.slot-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             if (this.disabled) return;
