@@ -56,7 +56,7 @@
 </head>
 <body>
 <div class="container">
-    <h3 class="text-center mb-3" style="font-size: 18px;">Запись иностранного гражданина на медосмотр<br>
+    <h3 class="text-center mb-3" style="font-size: 20px;">Запись иностранного гражданина на медосмотр<br>
       <small class="text-muted">Booking a medical check-up for a foreign national</small>
     </h3>
 
@@ -104,11 +104,11 @@
 
         <!-- ПАСПОРТНЫЕ ДАННЫЕ -->
         <div class="row">
-            <div class="col-md-6 mb-3">
+            <div class="col-md-5 mb-3">
                 <label class="form-label">Серия паспорта / Passport series *</label>
                 <input type="text" name="passport_series" class="form-control" required value="{{ data.get('passport_series', '') }}">
             </div>
-            <div class="col-md-6 mb-3">
+            <div class="col-md-7 mb-3">
                 <label class="form-label">Номер паспорта / Passport number *</label>
                 <input type="text" name="passport_number" class="form-control" required value="{{ data.get('passport_number', '') }}">
             </div>
@@ -141,7 +141,7 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Выберите время (слот 15 минут) | Choose a time (15‑minute slot) *</label>
+            <label class="form-label">Выберите время (слот 15 минут) / Choose a time (15‑minute slot) *</label>
             <div id="timeSlots">
                 {% for slot in all_slots %}
                     <button type="button" class="btn btn-outline-secondary btn-sm slot-btn 
