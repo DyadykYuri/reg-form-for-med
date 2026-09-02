@@ -70,10 +70,10 @@ def get_booked_times(date_str):
     return [r.reg_time for r in recs]
 
 def generate_time_slots():
-    """Генерирует слоты с 08:00 до 12:00 с шагом 15 минут"""
+    """Генерирует слоты с 08:00 до 11:45 с шагом 15 минут"""
     slots = []
     start = datetime.strptime('08:00', '%H:%M')
-    end = datetime.strptime('12:00', '%H:%M')
+    end = datetime.strptime('11:45', '%H:%M')
     current = start
     while current <= end:
         slots.append(current.strftime('%H:%M'))
