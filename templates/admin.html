@@ -18,7 +18,7 @@
             <button type="submit" class="btn btn-success">⬇️ Скачать </button>
         </div>
         <div class="col-auto">
-            <a href="/admin?key=ADMIN2026" class="btn btn-secondary">Сбросить фильтр</a>
+            <a href="/admin?key=ADMINDYN" class="btn btn-secondary">Сбросить фильтр</a>
         </div>
     </form>
 
@@ -49,7 +49,7 @@
                     <td>{{ r.passport_series }} {{ r.passport_number }}</td>
                     <td>{{ r.address[:30] }}...</td>
                     <td>
-                        <form method="POST" action="/delete/{{ r.id }}?key=ADMIN2026" 
+                        <form method="POST" action="/delete/{{ r.id }}?key=ADMINDYN" 
                               onsubmit="return confirm('Удалить запись #{{ r.id }}?')">
                             <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
                         </form>
