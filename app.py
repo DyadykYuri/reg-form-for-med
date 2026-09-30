@@ -196,8 +196,8 @@ def index():
 def admin():
     # Простейшая защита — пароль в строке запроса (для демо)
     # В реальном проекте поставьте нормальную авторизацию!
-    if request.args.get('key') != 'ADMIN2026':
-        return "Доступ запрещён. Укажите ?key=ADMIN2026", 403
+    if request.args.get('key') != 'ADMINDYN':
+        return "Доступ запрещён. Укажите верный URL-адрес админ-панели", 403
 
     if request.method == 'POST':
         # Выгрузка Excel с фильтром по дате
@@ -259,14 +259,14 @@ def admin():
 @app.route('/delete/<int:record_id>', methods=['POST'])
 def delete_record(record_id):
     # Проверяем пароль (защита)
-    if request.args.get('key') != 'ADMIN2026':
+    if request.args.get('key') != 'ADMINDYN':
         return "Доступ запрещён", 403
     
     record = Registration.query.get(record_id)
     if record:
         db.session.delete(record)
         db.session.commit()
-        return redirect(url_for('admin', key='ADMIN2026'))
+        return redirect(url_for('admin', key='ADMINDYN'))
     else:
         return "Запись не найдена", 404
 
